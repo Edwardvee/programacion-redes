@@ -12,9 +12,10 @@ with socket:
     conn, addr = socket.accept()
     with conn:
         print(f"Conectado a {addr}")
-        while True: 
+        
            
-            def RecibirMsg():               
+        def RecibirMsg():  
+            while True:              
                 recieved_msg = conn.recv(1024)
                 print(f"Cliente: {recieved_msg!r}")
                
@@ -23,7 +24,8 @@ with socket:
                     return
            
 
-            def EnviarMsg():
+        def EnviarMsg():
+            while True: 
                 send_msg = input("Tu:")
                 if send_msg != "adios":
                  conn.sendall(send_msg.encode())
@@ -37,10 +39,10 @@ with socket:
                 
                  
 
-            rcvthread = t.Thread(target=RecibirMsg, daemon=True)
-            sendthread = t.Thread(target=EnviarMsg, daemon=True)
-            rcvthread.start()
-            sendthread.start()
+        rcvthread = t.Thread(target=RecibirMsg, daemon=True)        
+        rcvthread.start()
+        EnviarMsg()
+           
            
           
            
