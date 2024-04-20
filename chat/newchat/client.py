@@ -1,0 +1,33 @@
+import socket
+import threading
+import mysql.connector as mysql
+import sys
+
+
+def rcv(s):
+        while True:
+            try:
+             data = s.recv(1024)
+            except: 
+             print("No se recibio ningun msj")
+            if data != "":
+             print(data.decode("utf-8"))
+def send(s): 
+       while True:
+        msj = input("Tu:")
+        if msj == "":
+          print("El mensaje esta vacio")
+        else: 
+          s.send(msj.encode())
+
+
+def main():
+    server = ("127.0.0.1", 62332)
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect(server)
+
+    mainThread = threading.Thread(target=rcv, args=(s,), daemon=True)    
+    mainThread.start()
+    send(s)
+            
+main()

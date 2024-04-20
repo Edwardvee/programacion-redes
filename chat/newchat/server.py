@@ -1,18 +1,64 @@
 import socket
 import threading
+import mysql.connector as mysql
 import sys
 
 conexiones = []
 
-class Main(threading.Thread):
-    def __init__(self, target=Hola):
-        server = ("127.0.0.1", 65555)
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind(server)
-        con
-        return
+class Client(threading.Thread):
+    def __init__(self, socket, address, id, name, signal):
+        threading.Thread.__init__(self)
+        self.socket = socket
+        self.address = address
+        self.id = id
+        self.name = name
+        self.signal = signal
 
 
-    def Hola():
-        return
+    def __str__(self):
+        return str(self.id) + " " + str(self.address)
+    
+
+    def run(self):
+        while self.signal:
+            try: 
+                data = self.socket.recv(32)
+                print("Se recibio algo de " + self.address)
+            except: 
+                print("El cliente " + str(self.address) + " se desconecto.")
+                self.signal = False
+                conexiones.remove(self)
+            if data != "":
+                print("ID:" + str(self.id) + ": " + str(data.decode("utf-8")))
+                for clientes in conexiones:
+                    print("hola")
+                    if clientes.id != self.id:
+                        clientes.socket.sendall(data)
+
+
+
+def newConnections(socket):
+    while True:
+        sock, address = socket.accept()
+        print("Nueva conexion")
+        print(sock)
+        print(address)
+        conexiones.append(Client(sock, address, len(conexiones), "Nombre", True))
+        m =  conexiones[-1]
+        m.run()
+       
+        
+
+def main():
+    server = ("127.0.0.1", 62332)
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind(server)
+    s.listen(5)
+    newConnectionsThread = threading.Thread(target=newConnections, args=(s,))
+    newConnectionsThread.start()
+    newConnectionsThread.join()
+
+main()
+
+
 
