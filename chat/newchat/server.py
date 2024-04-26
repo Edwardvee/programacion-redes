@@ -20,8 +20,11 @@ class Client(threading.Thread):
     
 
     def run(self):
+        print("1")
         while self.signal:
+            print("2")
             try: 
+                print("3")
                 data = self.socket.recv(32)
                 print("Se recibio algo de " + self.address)
             except: 
@@ -38,25 +41,28 @@ class Client(threading.Thread):
 
 
 def newConnections(socket):
-    while True:
-        sock, address = socket.accept()
-        print("Nueva conexion")
-        print(sock)
-        print(address)
-        conexiones.append(Client(sock, address, len(conexiones), "Nombre", True))
-        m =  conexiones[-1]
-        m.run()
-       
-        
+        while True:
+            sock, address = socket.accept()
+            print("Nueva conexion")
+            print(sock)
+            print(address)
+            client = Client(sock, address, len(conexiones), "Nombre", True)
+            client_thr = threading.Thread(target=client.run)
+            client_thr.start()
+            conexiones.append(client)
+            
+            
 
 def main():
-    server = ("127.0.0.1", 62332)
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind(server)
-    s.listen(5)
-    newConnectionsThread = threading.Thread(target=newConnections, args=(s,))
-    newConnectionsThread.start()
-    newConnectionsThread.join()
+        server = ("127.0.0.1", 62332)
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.bind(server)
+        s.listen(5)
+        newConnectionsThread = threading.Thread(target=newConnections, args=(s,))
+        newConnectionsThread.start()
+        newConnectionsThread.join()
+
+        print("Escuchando...")
 
 main()
 

@@ -5,29 +5,33 @@ import sys
 
 
 def rcv(s):
-        while True:
-            try:
-             data = s.recv(1024)
-            except: 
-             print("No se recibio ningun msj")
-            if data != "":
-             print(data.decode("utf-8"))
+  while True:
+    try:
+      data = s.recv(1024)
+    except: 
+      print("No se recibio ningun msj")
+    if data != "":
+     print(data.decode("utf-8"))
+
 def send(s): 
-       while True:
-        msj = input("Tu:")
-        if msj == "":
-          print("El mensaje esta vacio")
-        else: 
-          s.send(msj.encode())
+  while True:
+    try:
+      msj = input("Tu:")
+    except:
+      print("pene")
+    if msj == "":
+      print("El mensaje esta vacio")
+    else: 
+      s.send(msj.encode())
 
 
 def main():
-    server = ("127.0.0.1", 62332)
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect(server)
+  server = ("127.0.0.1", 62332)
+  s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+  s.connect(server)
 
-    mainThread = threading.Thread(target=rcv, args=(s,), daemon=True)    
-    mainThread.start()
-    send(s)
+  mainThread = threading.Thread(target=rcv, args=(s,))    
+  mainThread.start()
+  send(s)
             
 main()
