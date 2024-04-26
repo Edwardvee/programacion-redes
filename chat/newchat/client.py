@@ -18,11 +18,11 @@ def send(s):
     try:
       msj = input("Tu:")
     except:
-      print("pene")
-    if msj == "":
-      print("El mensaje esta vacio")
-    else: 
+      print("error")
+    if msj != "":
       s.send(msj.encode())
+    else: 
+      print("El mensaje esta vacio")
 
 
 def main():

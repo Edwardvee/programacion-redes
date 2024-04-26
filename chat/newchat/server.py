@@ -26,14 +26,16 @@ class Client(threading.Thread):
             try: 
                 print("3")
                 data = self.socket.recv(32)
-                print("Se recibio algo de " + self.address)
             except: 
                 print("El cliente " + str(self.address) + " se desconecto.")
                 self.signal = False
                 conexiones.remove(self)
             if data != "":
+                print("4")
+                print("Se recibio algo de " + self.address)
                 print("ID:" + str(self.id) + ": " + str(data.decode("utf-8")))
                 for clientes in conexiones:
+                    print("5")
                     print("hola")
                     if clientes.id != self.id:
                         clientes.socket.sendall(data)
