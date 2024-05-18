@@ -32,7 +32,7 @@ class Client(threading.Thread):
                 conexiones.remove(self)
             if data != "":
                 print("4")
-                print("Se recibio algo de " + self.address)
+                print("Se recibio algo de " + self.address)         
                 print("ID:" + str(self.id) + ": " + str(data.decode("utf-8")))
                 for clientes in conexiones:
                     print("5")
