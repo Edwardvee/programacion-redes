@@ -20,8 +20,8 @@ class Database:
     @staticmethod
     def GetUser(uid, cursor):
         try:
-            sql = "SELECT id, email FROM usuarios WHERE email = %s OR id = %i;"
-            val = (uid, uid)
+            sql = "SELECT id, email FROM usuarios WHERE email = %s;"
+            val = (uid)
             cursor.execute(sql, val)
             myresult = cursor.fetchall()
             if myresult != []:
@@ -30,7 +30,7 @@ class Database:
             else:
                 return -1
         except: 
-            print("Error de inicio de sesion")   
+            print("Error")   
 #log in
     @staticmethod
     def LogIn(username, password, cursor):
@@ -52,8 +52,7 @@ class Database:
     @staticmethod
     def SignIn(username, password, cursor, db):
         try:
-            cursor.execute("SELECT email FROM usuarios WHERE email = '"+ username +"'")
-            myresult = cursor.fetchall()
+            myresult = Database.GetUser(username, Database.db)
             if myresult == []:
                 try:
                     sql = "INSERT INTO usuarios (email, pwd) VALUES (%s, %s)"
@@ -62,10 +61,8 @@ class Database:
                     db.commit()
                     print("Usuario Creado")
                     try:
-                        cursor.execute("SELECT email FROM usuarios WHERE email = '"+ username +"'")
-                        myresult = cursor.fetchall()
-                        print("Sesion iniciada")
-                        return myresult    
+                        myresult = Database.LogIn(username, password, Database.cursor)
+                        return myresult 
                     except:
                         print("Error de base de datos - 3")
                         return -1
@@ -78,16 +75,15 @@ class Database:
 
 #storemsg
     @staticmethod
-    def StoreMsg():
-        
+    def StoreMsg():  
         pass
 #printmsgs
     @staticmethod
     def PrintMsg():
         pass
 
-
-#print(Database.SignIn("pepe5555","123", Database.cursor, Database.db))
+print(Database.GetUser("pepe", Database.db))
+#print(Database.SignIn("pepe553355","123", Database.cursor, Database.db))
 #Database.db_conn.fget(Database).cursor().execute("SELECT id FROM usuarios WHERE email = 'pepe'  AND pwd = '123';")
 #print(Database.db_conn)
 #print(Database.LogIn("pep54354354e", "1345323", Database.cursor))
