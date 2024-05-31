@@ -52,7 +52,7 @@ class Database:
     @staticmethod
     def SignIn(username, password, cursor, db):
         try:
-            myresult = Database.GetUser(username, Database.db)
+            myresult = Database.GetUser(username, Database.cursor)
             if myresult == []:
                 try:
                     sql = "INSERT INTO usuarios (email, pwd) VALUES (%s, %s)"
@@ -82,7 +82,7 @@ class Database:
     def PrintMsg():
         pass
 
-print(Database.GetUser("pepe", Database.db))
+#print(Database.GetUser("pepe", Database.cursor))
 #print(Database.SignIn("pepe553355","123", Database.cursor, Database.db))
 #Database.db_conn.fget(Database).cursor().execute("SELECT id FROM usuarios WHERE email = 'pepe'  AND pwd = '123';")
 #print(Database.db_conn)
