@@ -60,7 +60,7 @@ def recibir_msg():
         
 def enviar_msg():
     while True:
-        mensaje = '{}: {}'.format(username, input(''))
+        mensaje = input('')
         cliente.send(mensaje.encode('ascii'))
 
 receive_thread = t.Thread(target=recibir_msg)

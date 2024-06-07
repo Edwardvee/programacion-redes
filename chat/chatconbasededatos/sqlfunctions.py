@@ -20,7 +20,7 @@ class Database:
     @staticmethod
     def GetUser(uid, cursor):
         try:
-            sql = "SELECT id, email FROM usuarios WHERE email = %s;"
+            sql = "SELECT id, email FROM usuarios WHERE email = '%s';"
             val = (uid)
             cursor.execute(sql, val)
             myresult = cursor.fetchall()
@@ -40,7 +40,6 @@ class Database:
             cursor.execute(sql, val)
             myresult = cursor.fetchall()
             if myresult != []:
-                print(myresult)
                 print("Sesion iniciada")
                 return myresult
             else:
@@ -52,8 +51,11 @@ class Database:
     @staticmethod
     def SignIn(username, password, cursor, db):
         try:
-            myresult = Database.GetUser(username, Database.cursor)
-            if myresult == []:
+            sql = "SELECT email FROM usuarios WHERE email = %s"
+            val = (username,)
+            cursor.execute(sql, val)
+            row = cursor.fetchall()
+            if not row:
                 try:
                     sql = "INSERT INTO usuarios (email, pwd) VALUES (%s, %s)"
                     val = (username, password)
@@ -69,8 +71,11 @@ class Database:
                 except:
                     print("Error de base de datos - 2")
                     return -1
+            else:
+                print("Error nombre de usuario ya elegido") 
+                exit
         except: 
-            print("Error nombre de usuario ya elegido") 
+            print("Error bd") 
             return -1
 
 #storemsg
@@ -82,8 +87,8 @@ class Database:
     def PrintMsg():
         pass
 
-#print(Database.GetUser("pepe", Database.cursor))
-#print(Database.SignIn("pepe553355","123", Database.cursor, Database.db))
+
+#print(Database.SignIn("hola","123", Database.cursor, Database.db))
 #Database.db_conn.fget(Database).cursor().execute("SELECT id FROM usuarios WHERE email = 'pepe'  AND pwd = '123';")
 #print(Database.db_conn)
 #print(Database.LogIn("pep54354354e", "1345323", Database.cursor))

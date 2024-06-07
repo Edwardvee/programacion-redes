@@ -15,47 +15,60 @@ socket.listen(5)
 
 print("Escuchando...")
 
-def findCommand(s):
-    if s[0] == "/":
-        cmd = s.split()[0].lstrip("/")
-        msg = s.split(cmd , 1)[1].lstrip()
+def findCommand(s, user):
+    
+    s1 = s.decode('ascii')
+    #print(s1)
+    #print(s)
+    if s1[0] == "/":
+        #print("hola")
+        cmd = s1.split()[0].lstrip("/")
+        #print(cmd)
+        msg = s1.split(cmd , 1)[1].lstrip()
+        #print(msg)
         if cmd == "broadcast":
-            broadcast(msg)
+            broadcast(msg.encode('ascii'), user)
         if cmd == "servermsg":
-            servermsg(msg)
+            servermsg(msg, user)
         if cmd == "whisper":
             destinatary = msg.split()[0].lstrip()
             content = msg.split(destinatary, 1)[1].lstrip()
-            whisper(destinatary, content)
+            whisper(destinatary, content.encode('ascii'), user)
     else:
-        return broadcast(msg)
+        return broadcast(s, user)
     
     
 def handle(client):
     while True: 
         try:
             message = client.recv(1024)
-            findCommand(message)
+            index = clientes.index(client)
+            username = usuarios[index]
+            
+            #broadcast(message)
+            findCommand(message, username)
         except:
             index = clientes.index(client)
             clientes.remove(client)
             client.close()
             username = usuarios[index]
-            broadcast('{} se ha desconectado!'.format(username).encode('ascii'))
+            broadcast('{} se ha desconectado!'.format(username).encode('ascii'), "SERVIDOR")
             usuarios.remove(username)
             break
 
-def broadcast(msg):
+def broadcast(msg, user):
      for client in clientes:
-          client.send(msg)
+          cadena = user + ": " + msg.decode('ascii')
+          client.send(cadena.encode('ascii'))
 
-def servermsg(msg):
+def servermsg(msg, user):
     print("(SERVER-DM) Mensaje a servidor: {} ", format((msg)))
 
-def whisper(destinatary, msg):
+def whisper(destinatary, msg, user):
+    cadena = user + ": " + msg.decode('ascii')
     c_index = usuarios.index(destinatary)
     c = clientes[c_index]
-    c.send(msg)
+    c.send(cadena.encode('ascii'))
 
 def receive():
     while True:
@@ -69,7 +82,7 @@ def receive():
                 usuarios.append(username)
                 clientes.append(client)
                 print("Nombre de usuario es {}".format(username))
-                broadcast("{} Se ha unido!".format(username).encode('ascii'))
+                broadcast("{} Se ha unido!".format(username).encode('ascii'), "Servidor")
                 client.send('Conectado al servidor!'.encode('ascii'))
                  # Start Handling Thread For Client
                 thread = t.Thread(target=handle, args=(client,))
@@ -86,7 +99,7 @@ def receive():
                 usuarios.append(username)
                 clientes.append(client)
                 print("Nombre de usuario es {}".format(username))
-                broadcast("{} Se ha unido!".format(username).encode('ascii'))
+                broadcast("{} Se ha unido!".format(username).encode('ascii'), "SERVIDOR")
                 client.send('Conectado al servidor!'.encode('ascii'))
                  # Start Handling Thread For Client
                 thread = t.Thread(target=handle, args=(client,))
