@@ -1,55 +1,86 @@
 import mysql.connector
 
+
+
 class Database:
     def __init__(self):
-        pass
-    @property
-    def db_conn(self):
-        self.mysql.connector.connect(
+        self.db = mysql.connector.connect(
         host="127.0.0.1",
         user="root",
         password="",
         database="chatroom_q")
-        return self.db
-    @db_conn.setter
+        self.cursor = self.db.cursor()
+    db =  mysql.connector.connect(
+        host="127.0.0.1",
+        user="root",
+        password="",
+        database="chatroom_q")
+    cursor = db.cursor()
+#get user 
+    @staticmethod
+    def GetUser(uid, cursor):
+        try:
+            sql = "SELECT id, email FROM usuarios WHERE email = '%s';"
+            val = (uid)
+            cursor.execute(sql, val)
+            myresult = cursor.fetchall()
+            if myresult != []:
+                print("Se obtuvo " + myresult)
+                return myresult
+            else:
+                return -1
+        except: 
+            print("Error")   
 #log in
     @staticmethod
-    def LogIn(username, password, db):
+    def LogIn(username, password, cursor):
         try:
-            db.cursor.execute("SELECT id FROM usuarios WHERE email = '"+ username +"'  AND pwd = '"+ password +"';")
-            myresult = db.cursor.fetchall()
-            print("Sesion iniciada")
-            return myresult
+            sql = "SELECT email FROM usuarios WHERE email = %s AND pwd = %s;"
+            val = (username,password)
+            cursor.execute(sql, val)
+            myresult = cursor.fetchall()
+            if myresult != []:
+                print("Sesion iniciada")
+                return myresult
+            else:
+                print("No se ha encontrado usuario")
+                return -1
         except: 
-            print("Error de inicio de sesion")    
+            print("Error de inicio de sesion")  
 #sign in
     @staticmethod
-    def SignIn(username, password, db):
+    def SignIn(username, password, cursor, db):
         try:
-            db.cursor.execute("SELECT email FROM usuarios WHERE email = '"+ username +"'")
-            myresult = db.cursor.fetchall()
-            if myresult != 0:
+            sql = "SELECT email FROM usuarios WHERE email = %s"
+            val = (username,)
+            cursor.execute(sql, val)
+            row = cursor.fetchall()
+            if not row:
                 try:
                     sql = "INSERT INTO usuarios (email, pwd) VALUES (%s, %s)"
                     val = (username, password)
-                    db.cursor.execute(sql, val)
+                    cursor.execute(sql, val)
+                    db.commit()
                     print("Usuario Creado")
                     try:
-                        db.cursor.execute("SELECT id FROM usuarios WHERE email = '"+ username +"'")
-                        myresult = db.cursor.fetchall()
-                        print("Sesion iniciada")
-                        return myresult    
+                        myresult = Database.LogIn(username, password, Database.cursor)
+                        return myresult 
                     except:
                         print("Error de base de datos - 3")
+                        return -1
                 except:
                     print("Error de base de datos - 2")
+                    return -1
+            else:
+                print("Error nombre de usuario ya elegido") 
+                exit
         except: 
-            print("Error de base de datos - 1") 
+            print("Error bd") 
+            return -1
 
 #storemsg
     @staticmethod
-    def StoreMsg():
-
+    def StoreMsg():  
         pass
 #printmsgs
     @staticmethod
@@ -57,14 +88,8 @@ class Database:
         pass
 
 
-""" db = mysql.connector.connect(
-    host="127.0.0.1",
-    user="root",
-    password="",
-    database="chatroom_q")  
-cursor = db.cursor()
-cursor.execute("SELECT id FROM usuarios WHERE email = 'pepe'  AND pwd = '123';")
-myresult = cursor.fetchall()"""
-Database.db_conn.fget(Database).cursor().execute("SELECT id FROM usuarios WHERE email = 'pepe'  AND pwd = '123';")
-print(Database.db_conn)
-#Database.LogIn("pepe", "123", Database.cursor())
+#print(Database.SignIn("hola","123", Database.cursor, Database.db))
+#Database.db_conn.fget(Database).cursor().execute("SELECT id FROM usuarios WHERE email = 'pepe'  AND pwd = '123';")
+#print(Database.db_conn)
+#print(Database.LogIn("pep54354354e", "1345323", Database.cursor))
+
